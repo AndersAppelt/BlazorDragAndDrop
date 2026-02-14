@@ -1,0 +1,63 @@
+@typeparam T
+
+<div
+    @ondragenter="@OnDragEnterInternal"
+    @ondragleave="@OnDragLeaveInternal"
+    @ondragover="@OnDragOver"
+    @ondrop="@OnDropInternal"
+    @ondrop:preventDefault="true"
+    @ondragover:preventDefault="true"
+    class="@GetClasses()">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public EventCallback<T> OnDrop { get; set; }
+    [Parameter] public EventCallback<T> OnDragEnter { get; set; }
+    [Parameter] public EventCallback<T> OnDragLeave { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public T? Context { get; set; }
+
+    // Using a drag counter is necessary to accurately track drag enter/leave events because dragleave also fires when entering child elements.
+    private int _dragCounter;
+
+    private async Task OnDragEnterInternal(DragEventArgs e)
+    {
+        _dragCounter++;
+        if (_dragCounter == 1)
+        {
+            await OnDragEnter.InvokeAsync(Context);
+        }
+    }
+
+    private async Task OnDragLeaveInternal(DragEventArgs e)
+    {
+        _dragCounter--;
+        if (_dragCounter == 0)
+        {
+            await OnDragLeave.InvokeAsync(Context);
+        }
+    }
+
+    private void OnDragOver(DragEventArgs e)
+    {
+        // Required to allow dropping
+    }
+
+    private async Task OnDropInternal(DragEventArgs e)
+    {
+        _dragCounter = 0;
+        await OnDrop.InvokeAsync(Context);
+    }
+
+    private string GetClasses()
+    {
+        var classes = "dropzone";
+        if (_dragCounter > 0)
+        {
+            classes += " drag-over";
+        }
+
+        return classes;
+    }
+}

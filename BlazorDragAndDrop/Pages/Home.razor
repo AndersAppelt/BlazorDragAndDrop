@@ -1,0 +1,118 @@
+﻿@page "/"
+@using BlazorDragAndDrop.Components
+
+<PageTitle>Drag and Drop Demo</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="20" Class="demo-page">
+    <FluentCard Class="hero-card">
+        <h1>Drag and Drop Demo</h1>
+        <p>Move tasks between columns with only <code>Draggable</code>, <code>DropZone</code>, and a small drop handler.</p>
+    </FluentCard>
+
+    <FluentGrid Spacing="16">
+        @foreach (var column in _columns)
+        {
+            <FluentGridItem xs="12" sm="4">
+                <DropZone T="BoardColumn" Context="@column" OnDrop="@HandleDrop">
+                    <FluentCard Class="column-card">
+                        <div class="column-header">
+                            <h3>@GetColumnTitle(column)</h3>
+                            <span>@_tasksByColumn[column].Count items</span>
+                        </div>
+
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" Class="task-list">
+                            @foreach (var task in _tasksByColumn[column])
+                            {
+                                <Draggable OnDragStart="@(() => StartDrag(column, task))" OnDragEnd="@EndDrag">
+                                    <FluentCard Class="task-card">
+                                        <strong>@task.Title</strong>
+                                        <p>@task.Description</p>
+                                    </FluentCard>
+                                </Draggable>
+                            }
+                        </FluentStack>
+                    </FluentCard>
+                </DropZone>
+            </FluentGridItem>
+        }
+    </FluentGrid>
+</FluentStack>
+
+@code {
+    private readonly BoardColumn[] _columns = [BoardColumn.Backlog, BoardColumn.InProgress, BoardColumn.Done];
+
+    private readonly Dictionary<BoardColumn, List<DemoTask>> _tasksByColumn = new()
+    {
+        [BoardColumn.Backlog] =
+        [
+            new("Profile page polish", "Improve layout spacing and contrast."),
+            new("Keyboard support", "Add focus cues to interactive controls."),
+            new("Theme toggle", "Persist the selected theme preference.")
+        ],
+        [BoardColumn.InProgress] =
+        [
+            new("Drag animation", "Tune card movement for smooth feedback."),
+            new("Card metadata", "Show owner and due date badges.")
+        ],
+        [BoardColumn.Done] =
+        [
+            new("DropZone component", "Track drag enter, leave, and drop.")
+        ]
+    };
+
+    private DemoTask? _draggedTask;
+    private BoardColumn? _sourceColumn;
+
+    private void StartDrag(BoardColumn column, DemoTask task)
+    {
+        _sourceColumn = column;
+        _draggedTask = task;
+    }
+
+    private void HandleDrop(BoardColumn targetColumn)
+    {
+        if (_draggedTask is null || _sourceColumn is null || _sourceColumn == targetColumn)
+        {
+            ClearDragState();
+            return;
+        }
+
+        var draggedTask = _draggedTask;
+        var sourceColumn = _sourceColumn.Value;
+
+        if (_tasksByColumn[sourceColumn].Remove(draggedTask))
+        {
+            _tasksByColumn[targetColumn].Add(draggedTask);
+        }
+
+        ClearDragState();
+    }
+
+    private void EndDrag()
+    {
+        ClearDragState();
+    }
+
+    private void ClearDragState()
+    {
+        _draggedTask = null;
+        _sourceColumn = null;
+    }
+
+    private static string GetColumnTitle(BoardColumn column) => column switch
+    {
+        BoardColumn.Backlog => "Backlog",
+        BoardColumn.InProgress => "In Progress",
+        BoardColumn.Done => "Done",
+        _ => column.ToString()
+    };
+
+    private enum BoardColumn
+    {
+        Backlog,
+        InProgress,
+        Done
+    }
+
+    private sealed record DemoTask(string Title, string Description);
+}

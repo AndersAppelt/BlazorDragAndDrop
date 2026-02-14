@@ -1,0 +1,9 @@
+.dropzone {
+    border: 1px dashed var(--neutral-stroke-rest);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.drag-over {
+    border-color: var(--brand-primary);
+}

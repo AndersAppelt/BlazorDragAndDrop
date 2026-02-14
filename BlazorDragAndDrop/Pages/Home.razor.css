@@ -1,0 +1,66 @@
+.demo-page {
+    padding: 1rem 0 2rem;
+}
+
+.hero-card {
+    padding: 1.25rem;
+    border: none;
+    color: white;
+    background: linear-gradient(130deg, #4f46e5 0%, #2563eb 45%, #0891b2 100%);
+}
+
+    .hero-card h1 {
+        margin: 0 0 0.5rem;
+    }
+
+    .hero-card p {
+        margin: 0;
+        max-width: 48rem;
+    }
+
+    .hero-card code {
+        color: inherit;
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 4px;
+        padding: 0.1rem 0.3rem;
+    }
+
+.column-card {
+    min-height: 320px;
+    padding: 0.85rem;
+    background: var(--neutral-layer-2);
+    border: 1px solid var(--neutral-stroke-rest);
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+    .column-header h3 {
+        margin: 0;
+    }
+
+    .column-header span {
+        font-size: 0.8rem;
+        color: var(--neutral-foreground-hint);
+    }
+
+.task-list {
+    min-height: 220px;
+}
+
+.task-card {
+    padding: 0.75rem 0.85rem;
+    background: var(--neutral-layer-1);
+    border: 1px solid var(--neutral-stroke-rest);
+}
+
+    .task-card p {
+        margin: 0.35rem 0 0;
+        font-size: 0.85rem;
+        color: var(--neutral-foreground-hint);
+    }

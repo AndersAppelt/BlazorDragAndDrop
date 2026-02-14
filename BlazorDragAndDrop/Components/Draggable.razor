@@ -1,0 +1,38 @@
+<div
+    draggable="true"
+    @ondragstart="@OnDragStartInternal"
+    @ondragend="@OnDragEndInternal"
+    class="@GetClasses()">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public EventCallback OnDragStart { get; set; }
+    [Parameter] public EventCallback OnDragEnd { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _isDragging;
+
+    private async Task OnDragStartInternal(DragEventArgs e)
+    {
+        _isDragging = true;
+        await OnDragStart.InvokeAsync();
+    }
+
+    private async Task OnDragEndInternal(DragEventArgs e)
+    {
+        _isDragging = false;
+        await OnDragEnd.InvokeAsync();
+    }
+
+    private string GetClasses()
+    {
+        var classes = "draggable";
+        if (_isDragging)
+        {
+            classes += " dragging";
+        }
+
+        return classes;
+    }
+}
